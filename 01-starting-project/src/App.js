@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 import MoviesList from "./components/MoviesList";
 import "./App.css";
@@ -21,12 +21,14 @@ function App() {
   const [movies, fetchMovies] = useState([]);
   const [loader, isLoading] = useState(false);
   const [error, isError] = useState(null);
-  async function fetchMovieHandler() {
+
+  // async function fetchMovieHandler() {
+    const fetchMovieHandler = useCallback(async () => {
     isLoading(true);
     isError(null)
 
     try {
-      const response = await fetch("https://swapi.dev/api/film/");
+      const response = await fetch("https://swapi.dev/api/films/");
       if (!response.ok) {
         throw new Error("Something Went Wrong... Retrying");
       }
@@ -60,13 +62,15 @@ function App() {
     //   });
     //   fetchMovies(tranformMovies)
     //   isLoading(false)
-  }
+  },[])
+
+  useEffect(fetchMovieHandler, [fetchMovieHandler])
  
 
   return (
     <React.Fragment>
       <section>
-        <button onClick={fetchMovieHandler}>Fetch Movies</button>
+        <button >Fetch Movies</button>
 
       </section>
       <section>
