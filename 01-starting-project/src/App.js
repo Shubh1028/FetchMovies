@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 
 import MoviesList from "./components/MoviesList";
+import Form from './components/Form'
 import "./App.css";
 
 function App() {
@@ -23,9 +24,9 @@ function App() {
   const [error, isError] = useState(null);
 
   // async function fetchMovieHandler() {
-    const fetchMovieHandler = useCallback(async () => {
+  const fetchMovieHandler = useCallback(async () => {
     isLoading(true);
-    isError(null)
+    isError(null);
 
     try {
       const response = await fetch("https://swapi.dev/api/films/");
@@ -42,13 +43,12 @@ function App() {
         };
       });
       fetchMovies(tranformMovies);
-    } catch(error) {
-      isError(error.message)
+    } catch (error) {
+      isError(error.message);
 
-     setInterval(fetchMovieHandler, 5000);
+      setInterval(fetchMovieHandler, 5000);
     }
     isLoading(false);
-
 
     // const data = await response.json()
 
@@ -62,16 +62,28 @@ function App() {
     //   });
     //   fetchMovies(tranformMovies)
     //   isLoading(false)
-  },[])
+  }, []);
 
-  useEffect(fetchMovieHandler, [fetchMovieHandler])
- 
+  useEffect(fetchMovieHandler, [fetchMovieHandler]);
+
+  const formHandler = (event) => {
+    event.preventDefault();
+    const NewMovieObj = {
+      title: event.target[0].value,
+      desc: event.target[1].value,
+      rdate: event.target[2].value
+    }
+    console.log(NewMovieObj);
+  }
 
   return (
     <React.Fragment>
       <section>
-        <button >Fetch Movies</button>
+        <Form onClick={formHandler}/>
+      </section>
 
+      <section>
+        <button>Fetch Movies</button>
       </section>
       <section>
         {!loader && <MoviesList movies={movies} />}

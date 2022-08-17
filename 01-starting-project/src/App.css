@@ -27,3 +27,13 @@ button:active {
   background-color: #460897;
   border-color: #460897;
 }
+label{
+  font-weight: bold;
+  text-align: left !important
+}
+input, textarea{
+  width: 100%;
+  border-radius: 10px;
+  margin: 0.5rem;
+  padding: 0.3rem;
+}
