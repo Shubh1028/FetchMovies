@@ -5,20 +5,7 @@ import Form from './components/Form'
 import "./App.css";
 
 function App() {
-  // const dummyMovies = [
-  //   {
-  //     id: 1,
-  //     title: 'Some Dummy Movie',
-  //     openingText: 'This is the opening text of the movie',
-  //     releaseDate: '2021-05-18',
-  //   },
-  //   {
-  //     id: 2,
-  //     title: 'Some Dummy Movie 2',
-  //     openingText: 'This is the second opening text of the movie',
-  //     releaseDate: '2021-05-19',
-  //   },
-  // ];
+  
   const [movies, fetchMovies] = useState([]);
   const [loader, isLoading] = useState(false);
   const [error, isError] = useState(null);
@@ -29,51 +16,44 @@ function App() {
     isError(null);
 
     try {
-      const response = await fetch("https://swapi.dev/api/films/");
+      const response = await fetch("https://movies-app-8a39b-default-rtdb.firebaseio.com/movies.json");
       if (!response.ok) {
         throw new Error("Something Went Wrong... Retrying");
       }
       const data = await response.json();
-      const tranformMovies = data.results.map((movieData) => {
-        return {
-          id: movieData.episode_id,
-          title: movieData.title,
-          openingText: movieData.opening_crawl,
-          releaseDate: movieData.release_date,
-        };
-      });
-      fetchMovies(tranformMovies);
+      const loadedMovies = [];
+
+      for (const key in data) {
+        loadedMovies.push({
+          id: key,
+          title: data[key].title,
+          description: data[key].desc,
+          releaseDate: data[key].rdate
+        })
+      }
+     
+      fetchMovies(loadedMovies);
     } catch (error) {
       isError(error.message);
-
-      setInterval(fetchMovieHandler, 5000);
     }
     isLoading(false);
-
-    // const data = await response.json()
-
-    //     const tranformMovies = data.results.map((movieData)=>{
-    //       return {
-    //         id: movieData.episode_id,
-    //         title: movieData.title,
-    //         openingText: movieData.opening_crawl,
-    //         releaseDate: movieData.release_date
-    //       }
-    //   });
-    //   fetchMovies(tranformMovies)
-    //   isLoading(false)
   }, []);
 
   useEffect(fetchMovieHandler, [fetchMovieHandler]);
 
-  const formHandler = (event) => {
+ async function formHandler(event){
     event.preventDefault();
     const NewMovieObj = {
       title: event.target[0].value,
       desc: event.target[1].value,
       rdate: event.target[2].value
     }
-    console.log(NewMovieObj);
+    const response = await fetch('https://movies-app-8a39b-default-rtdb.firebaseio.com/movies.json', {
+      method: 'POST',
+      body: JSON.stringify(NewMovieObj),
+    })
+    const data = await response.json()
+    console.log(data);
   }
 
   return (
@@ -83,10 +63,10 @@ function App() {
       </section>
 
       <section>
-        <button>Fetch Movies</button>
+        <button onClick={fetchMovieHandler}>Fetch Movies</button>
       </section>
       <section>
-        {!loader && <MoviesList movies={movies} />}
+        {!loader && <MoviesList movies={movies}  getMovies={fetchMovieHandler}/>}
         {loader && !error && <p>Loading... Please Wait..</p>}
         {!loader && error && <p>{error}</p>}
       </section>
